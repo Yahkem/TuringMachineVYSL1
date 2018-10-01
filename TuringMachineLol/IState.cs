@@ -6,7 +6,7 @@ namespace TuringMachineLol
 {
     interface IState
     {
-        uint Id { get; set; }
+        uint Id { get; private set; }
         bool IsActive { get; set; }
         bool IsOutput { get; set; }
         bool IsInput { get; set; }

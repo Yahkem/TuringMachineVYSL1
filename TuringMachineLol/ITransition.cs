@@ -12,11 +12,4 @@ namespace TuringMachineLol
         char LetterToWrite { get; set; }
         Direction DirectionToGo { get; set; }
     }
-
-    enum Direction
-    {
-        Left,
-        Right,
-        None
-    }
 }
