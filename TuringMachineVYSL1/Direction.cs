@@ -1,4 +1,4 @@
-﻿namespace TuringMachineLol
+﻿namespace TuringMachineVYSL1
 {
     public enum Direction
     {
