@@ -7,21 +7,26 @@ namespace TuringMachineVYSL1
     {
         static void Main(string[] args)
         {
-            Console.Write("Napiste slovo: ");
+            //Console.Write("Napiste znaky abecedy (jako retezec - mezera se bere jako normalni znak): ");
+            //string strAlphabet = Console.ReadLine(); // mo10x
+            //char[] alphabet = strAlphabet.ToCharArray();
+
+            //Console.Write("Napiste znak vyjadrujici 'blank' (normalne '#'): ");
+            //char emptyChar = Console.ReadKey().KeyChar;
+            //Console.WriteLine(); Console.WriteLine();
+
+
+            //string word = "momomomomomomo";
+            Console.Write("Napiste slovo (ze znaku 'm' a 'o'): ");
             string word = Console.ReadLine(); // momomomomomomo
-
-            Console.Write("Napiste znaky abecedy (jako retezec - mezera se bere jako normalni znak): ");
-            string strAlphabet = Console.ReadLine(); // mo10x
-            char[] alphabet = strAlphabet.ToCharArray();
-
-            Console.Write("Napiste znak vyjadrujici 'blank' (normalne '#'): ");
-            char emptyChar = Console.ReadKey().KeyChar;
-            Console.WriteLine(); Console.WriteLine();
+            char[] alphabet = new char[] { '1', '0', 'm', 'o', 'x' };
+            char emptyChar = '#';
 
             State q0 = new State(0, isInput: true),
                 q1 = new State(1), q2 = new State(2),
                 q3 = new State(3), q4 = new State(4),
-                q5 = new State(5), q6 = new State(6, isOutput: true);
+                q5 = new State(5), q6 = new State(6),
+                q7 = new State(7, isOutput: true);
 
             Direction l = Direction.Left,
                 r = Direction.Right,
@@ -54,8 +59,13 @@ namespace TuringMachineVYSL1
                 new Transition('x', 'x', r, q5),
                 new Transition('o', 'x', l, q1),
                 new Transition('m', 'x', l, q1),
-                new Transition(emptyChar, emptyChar, s, q6)
+                new Transition(emptyChar, emptyChar, l, q6)
             );
+            q6.SetOutputTransitions(
+                new Transition('x', emptyChar, l, q6),
+                new Transition(emptyChar, emptyChar, s, q7)
+            );
+            
 
             TuringMachine machine = new TuringMachine(alphabet, emptyChar);
 
