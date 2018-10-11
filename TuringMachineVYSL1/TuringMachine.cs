@@ -48,7 +48,7 @@ namespace TuringMachineVYSL1
         {
             string tape = $"{EmptyChar}{str}{EmptyChar}";
 
-            State currentState = (State)InputState;
+            State currentState = InputState;
             currentState.IsActive = true;
             int idx = 1;
 
@@ -65,16 +65,15 @@ namespace TuringMachineVYSL1
                 tape = $"{tape.Substring(0, idx)}{transition.LetterToWrite}{tape.Substring(idx + 1)}";
 
                 currentState.IsActive = false;
-                currentState = (State)transition.EndState;
+                currentState = transition.EndState;
                 currentState.IsActive = true;
 
                 idx = transition.DirectionToGo == Direction.Left ? --idx :
                     transition.DirectionToGo == Direction.Right ? ++idx : idx;
 
-                if (idx < 0)
+                if (idx < 0) // extend tape
                 {
                     idx = 0;
-                    // TODO?
                     tape = EmptyChar + tape;
                 }
                 else if (idx >= tape.Length)

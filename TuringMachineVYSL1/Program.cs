@@ -7,31 +7,28 @@ namespace TuringMachineVYSL1
     {
         static void Main(string[] args)
         {
-            //Console.Write("Napiste znaky abecedy (jako retezec - mezera se bere jako normalni znak): ");
-            //string strAlphabet = Console.ReadLine(); // mo10x
-            //char[] alphabet = strAlphabet.ToCharArray();
-
-            //Console.Write("Napiste znak vyjadrujici 'blank' (normalne '#'): ");
-            //char emptyChar = Console.ReadKey().KeyChar;
-            //Console.WriteLine(); Console.WriteLine();
-
-
-            //string word = "momomomomomomo";
-            Console.Write("Napiste slovo (ze znaku 'm' a 'o'): ");
-            string word = Console.ReadLine(); // momomomomomomo
+            // Settings
+            Direction 
+                l = Direction.Left,
+                r = Direction.Right,
+                s = Direction.None;
+            const char emptyChar = '#';
             char[] alphabet = new char[] { '1', '0', 'm', 'o', 'x' };
-            char emptyChar = '#';
+            TuringMachine machine = new TuringMachine(alphabet, emptyChar);
 
+
+            // Input
+            //string word = "momomomomomomo";
+            Console.Write("Napiste slovo: ");
+            string word = Console.ReadLine(); // momomomomomomo
+            
+            // State setting
             State q0 = new State(0, isInput: true),
                 q1 = new State(1), q2 = new State(2),
                 q3 = new State(3), q4 = new State(4),
                 q5 = new State(5), q6 = new State(6),
                 q7 = new State(7, isOutput: true);
-
-            Direction l = Direction.Left,
-                r = Direction.Right,
-                s = Direction.None;
-
+            
             q0.SetOutputTransitions(
                 new Transition('m', 'x', l, q1),
                 new Transition('o', 'x', l, q1)
@@ -65,11 +62,9 @@ namespace TuringMachineVYSL1
                 new Transition('x', emptyChar, l, q6),
                 new Transition(emptyChar, emptyChar, s, q7)
             );
-            
 
-            TuringMachine machine = new TuringMachine(alphabet, emptyChar);
-
-            machine.States = new HashSet<State>() { q0,q1,q2,q3,q4,q5,q6 };
+            // Put states here
+            machine.States = new HashSet<State>() { q0,q1,q2,q3,q4,q5,q6,q7 };
 
             (State finalState, string resultOnTape) = machine.Run(word);
             Console.WriteLine($"Is the final state output? {(finalState.IsOutput ? "Yes":"No")}\nTape result={resultOnTape}");
