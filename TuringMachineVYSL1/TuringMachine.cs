@@ -57,10 +57,15 @@ namespace TuringMachineVYSL1
                 char curChar = tape[idx];
 
                 if (!Alphabet.Contains(curChar))
-                    throw new InvalidOperationException("alphabet doesn't contain this character");
+                    throw new InvalidOperationException("Alphabet doesn't contain this character");
 
                 var transition = currentState.GetTransition(curChar);
 
+                if (transition == null)
+                {
+                    Console.WriteLine($"There is no transition for char '{curChar}' in state #{currentState.Id}");
+                    break;
+                }
                 // zapis znak
                 tape = $"{tape.Substring(0, idx)}{transition.LetterToWrite}{tape.Substring(idx + 1)}";
 
@@ -84,6 +89,37 @@ namespace TuringMachineVYSL1
             }
 
             return (currentState, tape);
+        }
+
+        public string GetEncoded()
+        {
+            if (States == null || States.Count == 0)
+                return string.Empty;
+
+            string result = "111";
+            var alphabetList = new List<char>(Alphabet);
+            
+            foreach (var state in States)
+            {
+                foreach (Transition t in state.OutputTransitions)
+                {
+                    // id+1, beginning is 0
+                    result += new string('0', (int)t.BeginState.Id + 1) + "1";
+
+                    int indexOfLetter = alphabetList.IndexOf(t.LetterToRead);
+                    result += new string('0', indexOfLetter + 1) + "1";
+                    
+                    result += new string('0', (int)t.EndState.Id + 1) + "1";
+                    
+                    indexOfLetter = alphabetList.IndexOf(t.LetterToWrite);
+                    result += new string('0', indexOfLetter + 1) + "1";
+                    
+                    result += (t.DirectionToGo == Direction.Left ? "0" :
+                        t.DirectionToGo == Direction.Right ? "00" : "000") + "11";
+                }
+            }
+            
+            return result + "1";
         }
     }
 }

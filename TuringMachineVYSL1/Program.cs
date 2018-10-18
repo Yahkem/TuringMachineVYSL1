@@ -7,69 +7,84 @@ namespace TuringMachineVYSL1
     {
         static void Main(string[] args)
         {
-            // Settings
+            // Console settings
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            ConsoleColor origForeColor = Console.ForegroundColor;
+
+            // Turing Machine settings
             Direction 
                 l = Direction.Left,
                 r = Direction.Right,
                 s = Direction.None;
-            const char emptyChar = '#';
-            char[] alphabet = new char[] { '1', '0', 'm', 'o', 'x' };
+            const char emptyChar = '#',
+                a = 'a', b = 'b', w = 'λ';
+            char[] alphabet = new char[] { a, b, w };
             TuringMachine machine = new TuringMachine(alphabet, emptyChar);
-
-
-            // Input
-            //string word = "momomomomomomo";
-            Console.Write("Napiste slovo: ");
-            string word = Console.ReadLine(); // momomomomomomo
             
-            // State setting
-            State q0 = new State(0, isInput: true),
-                q1 = new State(1), q2 = new State(2),
-                q3 = new State(3), q4 = new State(4),
-                q5 = new State(5), q6 = new State(6),
-                q7 = new State(7, isOutput: true);
-            
-            q0.SetOutputTransitions(
-                new Transition('m', 'x', l, q1),
-                new Transition('o', 'x', l, q1)
-            );
-            q1.SetOutputTransitions(
-                new Transition(emptyChar, emptyChar, l, q2),
-                new Transition('x', 'x', l, q1)
-            );
-            q2.SetOutputTransitions(
-               new Transition(emptyChar, '1', r, q3),
-               new Transition('1', '0', l, q4),
-               new Transition('0', '1', r, q3)
-            );
-            q4.SetOutputTransitions(
-                new Transition('0', '1', s, q3),
-                new Transition('1', '0', l, q4),
-                new Transition(emptyChar, '1', r, q3)
-            );
-            q3.SetOutputTransitions(
-                new Transition('1', '1', r, q3),
-                new Transition('0', '0', r, q3),
-                new Transition(emptyChar, emptyChar, r, q5)
-            );
-            q5.SetOutputTransitions(
-                new Transition('x', 'x', r, q5),
-                new Transition('o', 'x', l, q1),
-                new Transition('m', 'x', l, q1),
-                new Transition(emptyChar, emptyChar, l, q6)
-            );
-            q6.SetOutputTransitions(
-                new Transition('x', emptyChar, l, q6),
-                new Transition(emptyChar, emptyChar, s, q7)
-            );
+            while (true)
+            {
+                // Input
+                Console.Write("Write a word: ");
+                string word = Console.ReadLine();
 
-            // Put states here
-            machine.States = new HashSet<State>() { q0,q1,q2,q3,q4,q5,q6,q7 };
+                // State setting
+                State q0 = new State(0, isInput: true),
+                    q1 = new State(1), q2 = new State(2),
+                    q3 = new State(3), q4 = new State(4),
+                    q5 = new State(5, isOutput: true);
 
-            (State finalState, string resultOnTape) = machine.Run(word);
-            Console.WriteLine($"Is the final state output? {(finalState.IsOutput ? "Yes":"No")}\nTape result={resultOnTape}");
-            
-            Console.ReadKey();
+                q0.SetOutputTransitions(
+                    new Transition(a, w, r, q1),
+                    new Transition(b, w, r, q4)
+                );
+                q1.SetOutputTransitions(
+                    new Transition(a, a, r, q1),
+                    new Transition(b, w, l, q2),
+                    new Transition(w, w, r, q1)
+                );
+                q2.SetOutputTransitions(
+                   new Transition(a, a, l, q2),
+                   new Transition(b, b, l, q2),
+                   new Transition(w, w, l, q2),
+                   new Transition(emptyChar, emptyChar, r, q3)
+                );
+                q3.SetOutputTransitions(
+                    new Transition(w, w, r, q3),
+                    new Transition(a, a, s, q0),
+                    new Transition(b, b, s, q0),
+                    new Transition(emptyChar, emptyChar, s, q5)
+                );
+                q4.SetOutputTransitions(
+                    new Transition(b, b, r, q4),
+                    new Transition(a, w, l, q2),
+                    new Transition(w, w, r, q4)
+                );
+
+                // Put states here
+                machine.States = new HashSet<State>() { q0, q1, q2, q3, q4, q5 };
+
+                // results
+                (State finalState, string resultOnTape) = machine.Run(word);
+
+                Console.Write("Is the final state output: ");
+                
+                Console.ForegroundColor = finalState.IsOutput ? ConsoleColor.Green : ConsoleColor.Red;
+                Console.WriteLine(finalState.IsOutput ? "Yes" : "No");
+                Console.ForegroundColor = origForeColor;
+                
+                Console.Write("Result on tape: ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine(resultOnTape);
+                Console.ForegroundColor = origForeColor;
+
+                Console.WriteLine($"Encoded Turing machine: {machine.GetEncoded()}");
+
+                Console.Write("Again (y/n)? ");
+                if (char.ToLower(Console.ReadKey().KeyChar) == 'n')
+                    break;
+
+                Console.WriteLine("\n=====\n=====");
+            }
         }
     }
 }
